@@ -1,12 +1,3 @@
-//Vá no seu arquivo App.jsx e importe o useState.
-//Crie um estado numérico chamado [itensCarrinho, setItensCarrinho] = useState(0).
-//Lá no Header (Cabeçalho) do seu aplicativo, exiba esse número. (Exemplo: <h3>🛒 Carrinho: {itensCarrinho} itens</h3>).
-//Lembra do .map() que varre o Banco de Dados e cospe os seus componentes <ItemCardapio>? Você precisará adicionar mais uma Prop chamada adicionarItem passando para ela uma Arrow Function que execute a soma: () => setItensCarrinho(itensCarrinho + 1).
-//Agora vá no outro arquivo, o ItemCardapio.jsx.
-//Na primeira linha da função, lá onde você recebe o nome, descricao e preco, avise o componente que ele agora recebe também a prop adicionarItem.
-//No final do layout desse cardápio, desenhe um <button>+ Adicionar</button>.
-//Coloque o evento onClick={adicionarItem} nesse botão.
-
 import ItemCardapio from "./components/ItemCardapio";
 import {useState} from "react";
 
