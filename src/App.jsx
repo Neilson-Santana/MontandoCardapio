@@ -1,50 +1,161 @@
-//Vá no seu arquivo App.jsx e importe o useState.
-//Crie um estado numérico chamado [itensCarrinho, setItensCarrinho] = useState(0).
-//Lá no Header (Cabeçalho) do seu aplicativo, exiba esse número. (Exemplo: <h3>🛒 Carrinho: {itensCarrinho} itens</h3>).
-//Lembra do .map() que varre o Banco de Dados e cospe os seus componentes <ItemCardapio>? Você precisará adicionar mais uma Prop chamada adicionarItem passando para ela uma Arrow Function que execute a soma: () => setItensCarrinho(itensCarrinho + 1).
-//Agora vá no outro arquivo, o ItemCardapio.jsx.
-//Na primeira linha da função, lá onde você recebe o nome, descricao e preco, avise o componente que ele agora recebe também a prop adicionarItem.
-//No final do layout desse cardápio, desenhe um <button>+ Adicionar</button>.
-//Coloque o evento onClick={adicionarItem} nesse botão.
-
+import { useEffect, useState } from "react";
 import ItemCardapio from "./components/ItemCardapio";
-import {useState} from "react";
-
-const bancoDeDados = [
-  { id: 1, nome: "X-Bacon Duplo", descricao: "Duas carnes e muito bacon.", preco: 35.00 },
-  { id: 2, nome: "Pizza Calabresa", descricao: "Tamanho Média 8 pedaços.", preco: 45.00 },
-  { id: 3, nome: "Suco de Laranja", descricao: "Copo 500ml natural.", preco: 8.00 },
-  { id: 4, nome: "Pudim Caseiro", descricao: "Fatia caprichada com calda extra.", preco: 12.00 }
-];
+import TagDesconto from './components/TagDesconto';
+import Interruptor from './components/Interruptor';
+import "./App.css";
 
 function App() {
-  const [itensCarrinho, setItensCarrinho] = useState(0)
-  
+  const [cardapio, setCardapio] = useState([]);
+  const [itensCarrinho, setItensCarrinho] = useState(0);
+  const [endereco, setEndereco] = useState("");
+  const [modalAberto, setModalAberto] = useState(false);
+  const [mensagemModal, setMensagemModal] = useState("");
+
+  useEffect(() => {
+    console.log("Conectando ao servidor...");
+    setTimeout(() => {
+      setCardapio([
+        { id: 1, nome: 'X-Bacon Duplo', descricao: 'Duas carnes e muito bacon.', preco: 35.00 },
+        { id: 2, nome: 'Pizza Calabresa', descricao: 'Tamanho média com 8 pedaços.', preco: 45.00 },
+        { id: 3, nome: 'Suco de Laranja', descricao: 'Copo de 500ml natural.', preco: 8.00 },
+        { id: 4, nome: 'Batata com Cheddar', descricao: 'Porção crocante com cheddar cremoso.', preco: 18.00 },
+        { id: 101, nome: "Combo Master", descricao: "Dois lanches + refri 2L", preco: 65.00 },
+        { id: 102, nome: "Hambúrguer de Grão de Bico", descricao: "Opção Vegana", preco: 28.00 },
+        { id: 103, nome: "Açaí na Tigela", descricao: "500ml com morango e leite condensado", preco: 18.00 },
+        { id: 104, nome: "Pizza de Calabresa", descricao: "Massa fina com calabresa e cebola", preco: 35.00 },
+        { id: 105, nome: "Coxinha de Frango", descricao: "Crocante e recheada com frango desfiado", preco: 5.00  },
+        { id: 106, nome: "Pastel de Queijo", descricao: "Massa fina e recheio de queijo", preco: 6.00 },
+        { id: 107, nome: "Suco Natural de Laranja", descricao: "300ml de suco fresco", preco: 7.00 },
+        { id: 108, nome: "Sorvete de Chocolate", descricao: "Casquinha com sorvete de chocolate", preco: 4.00 }
+      ]);
+    }, 2000);
+  }, []);
+
+  function finalizarCompra() {
+    if (itensCarrinho === 0) {
+      setMensagemModal("Coloque algo no carrinho!");
+      setModalAberto(true);
+      return;
+    }
+
+    if (endereco.trim() === "") {
+      setMensagemModal("Digite o endereço de entrega!");
+      setModalAberto(true);
+      return;
+    }
+
+    setMensagemModal("Pedido finalizado com sucesso!");
+    setModalAberto(true);
+    setItensCarrinho(0);
+    setEndereco("");
+  }
+
   return (
-    <div>
-      <h1>🍔 Cardápio do Delivery</h1>
+    <div className="app-shell">
+      <header className="topbar">
+        <div>
+          <p className="eyebrow">Senai Delivery</p>
+          <h1>Seu próximo pedido começa aqui.</h1>
+        </div>
+        <div className="cart-summary" aria-live="polite">
+          <span>🛒</span>
+          <strong>{itensCarrinho}</strong>
+          <span>itens</span>
+        </div>
+      </header>
 
-      <h3>🛒 Carrinho: </h3>
-      <div style={{border: "1px solid black", padding: "10px", width: "200px", textAlign: "center", margin: "10px auto", borderRadius: "10px", boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.3)"}}>
-        <header>
-        <h3>{itensCarrinho} itens</h3>
-        </header>
-      </div>
+      <main>
+      <section className="hero-panel">
+          <div>
+            <TagDesconto porcentagem="20" />
+            <h2>Comida boa, sem complicação.</h2>
+            <p>Escolha seus favoritos e receba tudo quentinho onde estiver.</p>
+          </div>
+          <Interruptor />
+        </section>
+        
 
-        <div style={{ display: "flex", justifyContent: "space-around" }}>
-      {bancoDeDados.map((item) => (
-        <ItemCardapio 
-          key={item.id}
-          nome={item.nome}
-          descricao={item.descricao}
-          preco={item.preco}
-          adicionarItem={() => setItensCarrinho(itensCarrinho + 1)}
-        />
-      ))}
-      </div>
+        <nav className="category-nav" aria-label="Categorias do cardápio">
+          {['Pizzas', 'Hambúrgueres', 'Bebidas', 'Sobremesas'].map((categoria) => (
+            <button type="button" key={categoria}>{categoria}</button>
+          ))}
+        </nav>
 
+      {modalAberto && (
+        <div
+          className="modal-backdrop"
+          onClick={() => setModalAberto(false)}
+          role="presentation"
+        >
+          <div
+            className="modal"
+            onClick={(event) => event.stopPropagation()}
+            role="alertdialog"
+            aria-modal="true"
+          >
+            <h3>{mensagemModal}</h3>
+            <button type="button" onClick={() => setModalAberto(false)}>
+              OK
+            </button>
+          </div>
+        </div>
+      )}
+
+      <section className="menu-section">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">Hoje no restaurante</p>
+              <h2>Cardápio em destaque</h2>
+            </div>
+            <span>{cardapio.length} opções</span>
+          </div>
+
+      {cardapio.length === 0 ? (
+        <h2>🔄 Carregando restaurante...</h2>
+      ) : (
+        <div className="menu-grid"
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "center",
+            gap: "16px",
+            maxWidth: "1180px",
+            margin: "0 auto"
+          }}
+        >
+          {cardapio.map((item) => (
+            <ItemCardapio
+              key={item.id}
+              nome={item.nome}
+              descricao={item.descricao}
+              preco={item.preco}
+              adicionarItem={() => setItensCarrinho((quantidadeAnterior) => quantidadeAnterior + 1)}
+            />
+          ))}
+        </div>
+      )}
+      </section>
+
+      <section className="checkout-panel">
+          <div>
+            <p className="eyebrow">Última etapa</p>
+            <h2>Onde devemos entregar?</h2>
+          </div>
+          <div className="checkout-form">
+            <label htmlFor="endereco">Endereço de entrega</label>
+            <input
+              id="endereco"
+              type="text"
+              placeholder="Rua e número"
+              value={endereco}
+              onChange={(event) => setEndereco(event.target.value)}
+            />
+            <button type="button" onClick={finalizarCompra}>Finalizar pedido</button>
+          </div>
+        </section>
+      </main>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
